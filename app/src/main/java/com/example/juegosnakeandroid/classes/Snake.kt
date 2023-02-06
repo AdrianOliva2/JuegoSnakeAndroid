@@ -7,6 +7,8 @@ import com.example.juegosnakeandroid.enums.Direction
 
 class Snake(width: Int, height: Int, private val tailColor: Int, private val headColor: Int) {
 
+    private val perdido = false
+
     companion object {
         private const val SPEED = 3
         private const val BLOCK_SIZE = 60
@@ -57,21 +59,25 @@ class Snake(width: Int, height: Int, private val tailColor: Int, private val hea
         }
     }
 
-    fun draw(canvas: Canvas?) {
-        val paint = Paint()
-        paint.isAntiAlias = true
-        paint.style = Paint.Style.FILL
-        paint.color = headColor
-        tail.forEachIndexed { index, point ->
-            run {
-                if (index > 0 && paint.color == headColor)
-                    paint.color = tailColor
+    fun draw(canvas: Canvas?): Boolean {
+        if (!perdido) {
+            val paint = Paint()
+            paint.isAntiAlias = true
+            paint.style = Paint.Style.FILL
+            paint.color = headColor
+            tail.forEachIndexed { index, point ->
+                run {
+                    if (index > 0 && paint.color == headColor)
+                        paint.color = tailColor
 
-                canvas?.drawRect(point.x.toFloat(), point.y.toFloat(), (point.x + BLOCK_SIZE).toFloat(), (point.y + BLOCK_SIZE).toFloat(), paint)
+                    canvas?.drawRect(point.x.toFloat(), point.y.toFloat(), (point.x + BLOCK_SIZE).toFloat(), (point.y + BLOCK_SIZE).toFloat(), paint)
+                }
             }
+            if (direction != Direction.STOP)
+                move()
+            return true
         }
-        if (direction != Direction.STOP)
-            move()
+        return false
     }
 
 }

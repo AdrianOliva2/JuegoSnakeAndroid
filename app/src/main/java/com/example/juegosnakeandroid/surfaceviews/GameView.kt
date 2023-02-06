@@ -1,17 +1,20 @@
 package com.example.juegosnakeandroid.surfaceviews
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.example.juegosnakeandroid.activities.FinalActivity
 import com.example.juegosnakeandroid.classes.Snake
 import com.example.juegosnakeandroid.enums.Direction
 import com.example.juegosnakeandroid.runnable.RunnableDraw
 import kotlin.math.absoluteValue
 
-class GameView(context: Context): SurfaceView(context), SurfaceHolder.Callback {
+class GameView(private val activity: Activity, context: Context): SurfaceView(context), SurfaceHolder.Callback {
 
     private lateinit var hiloDraw: RunnableDraw
     private var iniX: Float = -1F
@@ -39,17 +42,16 @@ class GameView(context: Context): SurfaceView(context), SurfaceHolder.Callback {
                     val desplX: Float = x - iniX
                     val desplY: Float = y - iniY
 
-                    if (desplX.absoluteValue > desplY.absoluteValue) {
+                    if (desplX.absoluteValue > desplY.absoluteValue)
                         if (desplX > 0)
                             snake.direction = Direction.RIGHT
                         else
                             snake.direction = Direction.LEFT
-                    } else {
+                    else
                         if (desplY > 0)
                             snake.direction = Direction.DOWN
                         else
                             snake.direction = Direction.UP
-                    }
 
                     iniX = event.x
                     iniY = event.y
@@ -62,7 +64,10 @@ class GameView(context: Context): SurfaceView(context), SurfaceHolder.Callback {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         canvas?.drawColor(Color.BLACK)
-        snake.draw(canvas)
+        if (!snake.draw(canvas)) {
+            context.startActivity(Intent(context, FinalActivity::class.java))
+            activity.finish()
+        }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
