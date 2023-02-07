@@ -5,12 +5,13 @@ import android.graphics.Paint
 import android.graphics.Point
 import com.example.juegosnakeandroid.enums.Direction
 
-class Snake(width: Int, height: Int, private val tailColor: Int, private val headColor: Int) {
+class Snake(private var width: Int, private var height: Int, private val tailColor: Int, private val headColor: Int) {
 
-    private val perdido = false
+    private var perdido = false
+    var points: Int = 0
 
     companion object {
-        private const val SPEED = 3
+        private const val SPEED = 6
         private const val BLOCK_SIZE = 60
     }
 
@@ -60,24 +61,30 @@ class Snake(width: Int, height: Int, private val tailColor: Int, private val hea
     }
 
     fun draw(canvas: Canvas?): Boolean {
-        if (!perdido) {
-            val paint = Paint()
-            paint.isAntiAlias = true
-            paint.style = Paint.Style.FILL
-            paint.color = headColor
-            tail.forEachIndexed { index, point ->
-                run {
-                    if (index > 0 && paint.color == headColor)
-                        paint.color = tailColor
+        val head: Point = tail[tail.size - 1]
+        if ((head.x < 0 || head.x > this.width) || (head.y < 0 || head.y > this.height)) {
+            perdido = true
+            return false
+        } else {
+            if (!perdido) {
+                val paint = Paint()
+                paint.isAntiAlias = true
+                paint.style = Paint.Style.FILL
+                paint.color = headColor
+                tail.forEachIndexed { index, point ->
+                    run {
+                        if (index > 0 && paint.color == headColor)
+                            paint.color = tailColor
 
-                    canvas?.drawRect(point.x.toFloat(), point.y.toFloat(), (point.x + BLOCK_SIZE).toFloat(), (point.y + BLOCK_SIZE).toFloat(), paint)
+                        canvas?.drawRect(point.x.toFloat(), point.y.toFloat(), (point.x + BLOCK_SIZE).toFloat(), (point.y + BLOCK_SIZE).toFloat(), paint)
+                    }
                 }
+                if (direction != Direction.STOP)
+                    move()
+                return true
             }
-            if (direction != Direction.STOP)
-                move()
-            return true
+            return false
         }
-        return false
     }
 
 }

@@ -1,31 +1,39 @@
 package com.example.juegosnakeandroid.surfaceviews
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import com.example.juegosnakeandroid.MainActivity
+import com.example.juegosnakeandroid.R
 import com.example.juegosnakeandroid.activities.FinalActivity
 import com.example.juegosnakeandroid.classes.Snake
 import com.example.juegosnakeandroid.enums.Direction
 import com.example.juegosnakeandroid.runnable.RunnableDraw
+import kotlin.concurrent.thread
 import kotlin.math.absoluteValue
 
-class GameView(private val activity: Activity, context: Context): SurfaceView(context), SurfaceHolder.Callback {
 
-    private lateinit var hiloDraw: RunnableDraw
+class GameView(private val activity: MainActivity, context: Context): SurfaceView(context), SurfaceHolder.Callback {
+
     private var iniX: Float = -1F
     private var iniY: Float = -1F
     private lateinit var snake: Snake
     private lateinit var runnableDraw: RunnableDraw
     private lateinit var drawThread: Thread
+    @SuppressLint("UseCompatLoadingForDrawables")
+    var bgImage: Drawable? = context.getDrawable(R.drawable.snake_game_background_portrait)
 
     init {
         holder.addCallback(this)
         setBackgroundColor(Color.BLACK)
+        background = bgImage
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -52,9 +60,6 @@ class GameView(private val activity: Activity, context: Context): SurfaceView(co
                             snake.direction = Direction.DOWN
                         else
                             snake.direction = Direction.UP
-
-                    iniX = event.x
-                    iniY = event.y
                 }
             }
         }
@@ -63,10 +68,13 @@ class GameView(private val activity: Activity, context: Context): SurfaceView(co
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawColor(Color.BLACK)
+        if (canvas != null) {
+            canvas.drawColor(Color.BLACK)
+            bgImage?.draw(canvas)
+        }
         if (!snake.draw(canvas)) {
-            context.startActivity(Intent(context, FinalActivity::class.java))
-            activity.finish()
+            activity.lose(snake.points)
+            surfaceDestroyed(holder)
         }
     }
 
