@@ -19,9 +19,11 @@ open class PortraitActivity : Activity() {
         val alertDialog: AlertDialog.Builder = AlertDialog.Builder(this)
         alertDialog.setTitle("¿Estás seguro que deseas salir?")
         alertDialog.setPositiveButton("Sí") { _: DialogInterface, _: Int ->
-            this.finish()
+            run {
+                this.finish()
+            }
         }
-        alertDialog.setNegativeButton("No") { _: DialogInterface, _: Int -> {}}
+        alertDialog.setNegativeButton("No") { _: DialogInterface, _: Int -> }
         alertDialog.create()
         alertDialog.show()
     }

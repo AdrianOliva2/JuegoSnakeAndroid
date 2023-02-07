@@ -27,6 +27,14 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
     private lateinit var snake: Snake
     private lateinit var runnableDraw: RunnableDraw
     private lateinit var drawThread: Thread
+    var paused: Boolean = false
+        set(value) {
+            if (this::snake.isInitialized) {
+                field = value
+                snake.paused = value
+            }
+        }
+
     @SuppressLint("UseCompatLoadingForDrawables")
     var bgImage: Drawable? = context.getDrawable(R.drawable.snake_game_background_portrait)
 
@@ -73,13 +81,13 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
             bgImage?.draw(canvas)
         }
         if (!snake.draw(canvas)) {
-            activity.lose(snake.points)
+            activity.lose(snake.score)
             surfaceDestroyed(holder)
         }
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        snake = Snake(this.width, this.height, Color.LTGRAY, Color.WHITE)
+        snake = Snake(this.width, this.height, Color.LTGRAY, Color.WHITE, Color.RED, Color.WHITE)
         runnableDraw = RunnableDraw(this)
         runnableDraw.run = true
         drawThread = Thread(runnableDraw)
