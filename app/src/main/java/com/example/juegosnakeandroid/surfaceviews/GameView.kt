@@ -1,9 +1,7 @@
 package com.example.juegosnakeandroid.surfaceviews
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
@@ -12,11 +10,9 @@ import android.view.SurfaceHolder
 import android.view.SurfaceView
 import com.example.juegosnakeandroid.MainActivity
 import com.example.juegosnakeandroid.R
-import com.example.juegosnakeandroid.activities.FinalActivity
 import com.example.juegosnakeandroid.classes.Snake
 import com.example.juegosnakeandroid.enums.Direction
 import com.example.juegosnakeandroid.runnable.RunnableDraw
-import kotlin.concurrent.thread
 import kotlin.math.absoluteValue
 
 

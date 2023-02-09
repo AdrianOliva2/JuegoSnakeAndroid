@@ -8,9 +8,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.juegosnakeandroid.activities.FinalActivity
+import com.example.juegosnakeandroid.activities.HighScoreActivity
 import com.example.juegosnakeandroid.activities.PortraitActivity
-import com.example.juegosnakeandroid.runnable.RunnableDraw
 import com.example.juegosnakeandroid.surfaceviews.GameView
 
 class MainActivity: PortraitActivity(), View.OnClickListener {
@@ -32,7 +31,7 @@ class MainActivity: PortraitActivity(), View.OnClickListener {
     }
 
     fun lose(points: Int) {
-        val intent = Intent(this, FinalActivity::class.java)
+        val intent = Intent(this, HighScoreActivity::class.java)
         intent.putExtra("points", points)
         startActivity(intent)
         finish()

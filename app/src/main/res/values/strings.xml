@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">JuegoSnakeAndroid</string>
     <string name="jugar">Jugar</string>
+    <string name="volver_a_jugar">Volver a jugar</string>
 </resources>
