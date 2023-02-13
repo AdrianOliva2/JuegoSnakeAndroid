@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.drawable.Drawable
+import android.media.MediaPlayer
 import android.view.MotionEvent
 import android.view.SurfaceHolder
 import android.view.SurfaceView
@@ -23,12 +24,19 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
     private lateinit var snake: Snake
     private lateinit var runnableDraw: RunnableDraw
     private lateinit var drawThread: Thread
+    private val sonidoFondo: MediaPlayer?
     var paused: Boolean = false
+        @SuppressLint("SuspiciousIndentation")
         set(value) {
             if (this::snake.isInitialized) {
                 field = value
                 snake.paused = value
             }
+            if (value)
+                sonidoFondo?.stop()
+            else
+                sonidoFondo?.start()
+                sonidoFondo?.isLooping = true
         }
 
     @SuppressLint("UseCompatLoadingForDrawables")
@@ -38,6 +46,9 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
         holder.addCallback(this)
         setBackgroundColor(Color.BLACK)
         background = bgImage
+        sonidoFondo = MediaPlayer.create(context, R.raw.snake_game)
+        sonidoFondo.start()
+        sonidoFondo?.isLooping = true
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -80,10 +91,12 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
             activity.lose(snake.score)
             surfaceDestroyed(holder)
         }
+        if (!paused && sonidoFondo?.isPlaying == false)
+            sonidoFondo.start()
     }
 
     override fun surfaceCreated(holder: SurfaceHolder) {
-        snake = Snake(this.width, this.height, Color.LTGRAY, Color.WHITE, Color.RED, Color.WHITE)
+        snake = Snake(context, this.width, this.height, Color.LTGRAY, Color.WHITE, Color.RED, Color.WHITE)
         runnableDraw = RunnableDraw(this)
         runnableDraw.run = true
         drawThread = Thread(runnableDraw)
@@ -95,6 +108,7 @@ class GameView(private val activity: MainActivity, context: Context): SurfaceVie
     }
 
     override fun surfaceDestroyed(holder: SurfaceHolder) {
+        sonidoFondo?.stop()
         var retry = true
         runnableDraw.run = false
 

@@ -5,8 +5,9 @@
 
     <TextView
         android:id="@+id/textViewRowItem"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
+        android:textColor="@color/white"
         android:textSize="14sp" />
 </LinearLayout>

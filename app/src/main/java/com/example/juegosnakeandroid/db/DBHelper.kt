@@ -35,7 +35,7 @@ class DBHelper(private val context: Context) : SQLiteOpenHelper(context, dbName,
             val db: SQLiteDatabase = this.readableDatabase
             val cursorUsuario: Cursor = db.rawQuery("SELECT \"NAME\", \"SCORE\" FROM \"PLAYER\";", null)
             while (cursorUsuario.moveToNext()) {
-                scores.plus(Player(cursorUsuario.getString(0), cursorUsuario.getInt(1)))
+                scores += Player(cursorUsuario.getString(0), cursorUsuario.getInt(1))
             }
             cursorUsuario.close()
             return scores

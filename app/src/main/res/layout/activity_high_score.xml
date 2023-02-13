@@ -9,13 +9,15 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/highScoreList"
-        android:layout_width="368dp"
-        android:layout_height="326dp"
-        android:layout_marginBottom="85dp"
+        android:layout_width="344dp"
+        android:layout_height="281dp"
         app:layout_constraintBottom_toTopOf="@+id/btnVolver"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+        app:layout_constraintHorizontal_bias="0.492"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.694" />
+        
     <Button
         android:id="@+id/btnVolver"
         android:layout_width="222dp"
