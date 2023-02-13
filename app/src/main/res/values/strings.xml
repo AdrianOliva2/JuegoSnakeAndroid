@@ -1,4 +1,8 @@
 <resources>
-    <string name="app_name">JuegoSnakeAndroid</string>
-    <string name="jugar">Jugar</string>
+    <string name="app_name">Snake</string>
+    <string name="jugar">Play</string>
+    <string name="volver_a_jugar">Retry</string>
+    <string name="introduce_tu_nombre">Introduce your name:</string>
+    <string name="insertar_puntuaci_n">Insert score</string>
+    <string name="high_score">High score</string>
 </resources>

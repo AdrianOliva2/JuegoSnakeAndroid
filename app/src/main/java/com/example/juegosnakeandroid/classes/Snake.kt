@@ -1,19 +1,26 @@
 package com.example.juegosnakeandroid.classes
 
+import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Point
+import android.media.MediaPlayer
+import android.util.Log
 import androidx.appcompat.widget.ActivityChooserView.InnerLayout
+import com.example.juegosnakeandroid.R
 import com.example.juegosnakeandroid.enums.Direction
+import kotlin.concurrent.thread
 import kotlin.random.Random
 
-class Snake(private var width: Int, private var height: Int, private val tailColor: Int, private val headColor: Int, private val appleColor: Int, private val textColor: Int) {
+class Snake(private val context: Context, private var width: Int, private var height: Int, private val tailColor: Int, private val headColor: Int, private val appleColor: Int, private val textColor: Int) {
 
     private var losed = false
     var score: Int = 0
     var paused: Boolean = false
     private var tail: MutableList<Point> = arrayListOf(Point(width / 2, height / 2))
     private val head: Point = tail[0]
+    private val eatSound: MediaPlayer = MediaPlayer.create(context, R.raw.snake_eat_sound)
+    private val gameOverSound: MediaPlayer = MediaPlayer.create(context, R.raw.game_over_sound)
 
     companion object {
         private const val SPEED = 6
@@ -25,68 +32,64 @@ class Snake(private var width: Int, private var height: Int, private val tailCol
     private var apple: Point? = null
     var direction = Direction.STOP
 
+    //Method for snake eat apple
+    private fun eatApple() {
+        if (apple != null) {
+            Log.i("CoordsSnakeApple", "Cabeza: (x: ${head.x}, y: ${head.y}), Manzana: (x: ${apple!!.x}, y: ${apple!!.y})")
+            if (((head.x + BLOCK_SIZE > apple!!.x - APPLE_RADIUS.toInt()) && (head.y + BLOCK_SIZE > apple!!.y - APPLE_RADIUS.toInt())) && ((head.x - BLOCK_SIZE < apple!!.x + APPLE_RADIUS.toInt()) && (head.y - BLOCK_SIZE < apple!!.y + APPLE_RADIUS.toInt()))) {
+                apple = null
+                eatSound.start()
+                eatSound.isLooping = false
+                score += 10
+                val lastTailBlock = tail[tail.size - 1]
+                when (direction) {
+                    Direction.UP -> {
+                        tail += Point(lastTailBlock.x, (lastTailBlock.y + BLOCK_SIZE))
+                    }
+                    Direction.DOWN -> {
+                        tail += Point(lastTailBlock.x, (lastTailBlock.y - BLOCK_SIZE))
+                    }
+                    Direction.LEFT -> {
+                        tail += Point((lastTailBlock.x + BLOCK_SIZE), lastTailBlock.y)
+                    }
+                    Direction.RIGHT -> {
+                        tail += Point((lastTailBlock.x - BLOCK_SIZE), lastTailBlock.y)
+                    }
+                    else -> {}
+                }
+            }
+        }
+    }
+
     private fun move() {
         if (!paused) {
-            when (direction) {
-                Direction.LEFT -> {
-                    tail.forEachIndexed { index, point ->
-                        run {
-                            val newPoint: Point = point
-                            newPoint.x -= SPEED
-                            tail[index] = newPoint
-                        }
-                    }
-                }
-                Direction.UP -> {
-                    tail.forEachIndexed { index, point ->
-                        run {
-                            val newPoint: Point = point
-                            newPoint.y -= SPEED
-                            tail[index] = newPoint
-                        }
-                    }
-                }
-                Direction.RIGHT -> {
-                    tail.forEachIndexed { index, point ->
-                        run {
-                            val newPoint: Point = point
-                            newPoint.x += SPEED
-                            tail[index] = newPoint
-                        }
-                    }
-                }
-                Direction.DOWN -> {
-                    tail.forEachIndexed { index, point ->
-                        run {
-                            val newPoint: Point = point
-                            newPoint.y += SPEED
-                            tail[index] = newPoint
-                        }
-                    }
-                }
-                else -> {}
-            }
-            if (apple != null) {
-                if (head.x - apple!!.x < 2 && head.y - apple!!.y < 2) {
-                    apple = null
-                    score += 10
-                    val lastTailBlock = tail[tail.size - 1]
+            for (i in tail.lastIndex downTo 0) {
+                if (i > 0) {
+                    val newPoint: Point = tail[i - 1]
+                    tail[i].x = newPoint.x
+                    tail[i].y = newPoint.y
+                } else {
+                    val newPoint: Point = tail[i]
                     when (direction) {
-                        Direction.UP -> {
-                            tail += Point(lastTailBlock.x, (lastTailBlock.y + BLOCK_SIZE))
-                        }
-                        Direction.DOWN -> {
-                            tail += Point(lastTailBlock.x, (lastTailBlock.y - BLOCK_SIZE))
-                        }
                         Direction.LEFT -> {
-                            tail += Point((lastTailBlock.x + BLOCK_SIZE), lastTailBlock.y)
+                            newPoint.x -= SPEED
+                        }
+                        Direction.UP -> {
+                            newPoint.y -= SPEED
                         }
                         Direction.RIGHT -> {
-                            tail += Point((lastTailBlock.x - BLOCK_SIZE), lastTailBlock.y)
+                            newPoint.x += SPEED
+                        }
+                        Direction.DOWN -> {
+                            newPoint.y += SPEED
                         }
                         else -> {}
                     }
+                    tail[i] = newPoint
                 }
+            }
+            if (apple != null) {
+                eatApple()
             }
         }
     }
@@ -101,6 +104,8 @@ class Snake(private var width: Int, private var height: Int, private val tailCol
 
         if ((head.x < 0 || head.x > this.width) || (head.y < 0 || head.y > this.height)) {
             losed = true
+            gameOverSound.start()
+            gameOverSound.isLooping = false
             return false
         } else {
             if (!losed) {
@@ -128,16 +133,22 @@ class Snake(private var width: Int, private var height: Int, private val tailCol
                 paint.color = headColor
                 tail.forEachIndexed { index, point ->
                     run {
-                        if (index > 0 && paint.color == headColor)
-                            paint.color = tailColor
-
-                        canvas?.drawRect(point.x.toFloat(), point.y.toFloat(), (point.x + BLOCK_SIZE).toFloat(), (point.y + BLOCK_SIZE).toFloat(), paint)
+                        if (index > 0 && paint.color == headColor) {
+                                paint.color = tailColor
+                        }
+                        canvas?.drawRect(
+                            point.x.toFloat(),
+                            point.y.toFloat(),
+                            (point.x + BLOCK_SIZE).toFloat(),
+                            (point.y + BLOCK_SIZE).toFloat(),
+                            paint
+                        )
                     }
                 }
-                if (direction != Direction.STOP)
-                    move()
-                return true
             }
+            if (direction != Direction.STOP)
+                move()
+                return true
         }
         return false
     }

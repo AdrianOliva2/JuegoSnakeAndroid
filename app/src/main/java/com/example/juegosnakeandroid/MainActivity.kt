@@ -8,9 +8,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.example.juegosnakeandroid.activities.FinalActivity
+import com.example.juegosnakeandroid.activities.HighScoreActivity
+import com.example.juegosnakeandroid.activities.LoseActivity
 import com.example.juegosnakeandroid.activities.PortraitActivity
-import com.example.juegosnakeandroid.runnable.RunnableDraw
 import com.example.juegosnakeandroid.surfaceviews.GameView
 
 class MainActivity: PortraitActivity(), View.OnClickListener {
@@ -29,11 +29,13 @@ class MainActivity: PortraitActivity(), View.OnClickListener {
         val btnJugar: Button = findViewById(R.id.btnJugar)
         btnJugar.setOnClickListener(this)
         gameView = GameView(this, this)
+        val btnHighScore: Button = findViewById(R.id.btnHighScore)
+        btnHighScore.setOnClickListener(this)
     }
 
     fun lose(points: Int) {
-        val intent = Intent(this, FinalActivity::class.java)
-        intent.putExtra("points", points)
+        val intent = Intent(this, LoseActivity::class.java)
+        intent.putExtra("score", points)
         startActivity(intent)
         finish()
     }
@@ -42,6 +44,11 @@ class MainActivity: PortraitActivity(), View.OnClickListener {
         when (v?.id) {
             R.id.btnJugar -> {
                 setContentView(gameView)
+            }
+            R.id.btnHighScore -> {
+                val intent = Intent(this, HighScoreActivity::class.java)
+                startActivity(intent)
+                finish()
             }
         }
     }
